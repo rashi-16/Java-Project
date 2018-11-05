@@ -36,6 +36,9 @@ public class PaymentDaoImpl implements PaymentDao  {
 			while(rst.next()) {
 				userid=rst.getString(5);
 			}
+			rst.close();
+			pstmt.close();
+			connection.close();
 			if(userid.equals(userID))
 				return true;
 			else return false;
@@ -58,6 +61,8 @@ public class PaymentDaoImpl implements PaymentDao  {
 			pstmt.setDouble(3, paymentBean.getCreditBalance());
 			pstmt.setString(5, userid);
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+			connection.close();
 		     if(z!=0) {
 		    	 
 		    	 return "Success";

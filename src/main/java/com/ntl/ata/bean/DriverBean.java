@@ -12,6 +12,7 @@ public class DriverBean {
 	private String pincode;
 	private String mobileNo;
 	private String licenseNumber;
+	private int driverStatus;
 	
 	
 	public DriverBean() {
@@ -19,7 +20,7 @@ public class DriverBean {
 		// TODO Auto-generated constructor stub
 	}
 	public DriverBean(String driverID, String name, String street, String location, String city, String state,
-			String pincode, String mobileNo, String licenseNumber) {
+			String pincode, String mobileNo, String licenseNumber, int driverStatus) {
 		super();
 		this.driverID = driverID;
 		this.name = name;
@@ -30,10 +31,17 @@ public class DriverBean {
 		this.pincode = pincode;
 		this.mobileNo = mobileNo;
 		this.licenseNumber = licenseNumber;
+		this.driverStatus=driverStatus;
 	}
 
 
 	
+	public int getDriverStatus() {
+		return driverStatus;
+	}
+	public void setDriverStatus(int driverStatus) {
+		this.driverStatus = driverStatus;
+	}
 	public String getDriverID() {
 		return driverID;
 	}

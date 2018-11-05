@@ -37,7 +37,8 @@ public class ProfileDaoImpl implements ProfileDao{
 		     pstmt.setString(12, profile.getEmailID());
 		    
 		     int z=pstmt.executeUpdate();
-		     
+				pstmt.close();
+				connection.close();
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -53,25 +54,7 @@ public class ProfileDaoImpl implements ProfileDao{
 			}
 	}
 
-	public int deleteCredentials(ArrayList<String> arr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public boolean updateProfile(ProfileBean credentials) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public ProfileBean findByID(String userid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ArrayList<ProfileBean> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	
 	
 	

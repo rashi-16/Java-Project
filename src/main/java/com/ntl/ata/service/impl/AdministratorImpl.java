@@ -24,13 +24,30 @@ public class AdministratorImpl implements Administrator {
 	RouteDao routeDetails = new RouteDaoImpl();
 	ReservationDao reservation = new ReservationDaoImpl();
 	
+	public AdministratorImpl() {
+		
+	}
+	public AdministratorImpl(VehicleDaoImpl vehicleDetails) {
+		this.vehicleDetails=vehicleDetails;
+	}
+
+	public AdministratorImpl(DriverDaoImpl driverDetails) {
+		this.driverDetails = driverDetails;
+	}
+	public AdministratorImpl(RouteDaoImpl routeDetails) {
+		this.routeDetails= routeDetails;
+	}
 	public String addVehicle(VehicleBean vehicleBean) {
 		// TODO Auto-generated method stub
 		String temp=vehicleBean.getName().substring(0, 2);
 		int num=(int)(Math.round(Math.random()*10000));
+		
 		String unique=temp+num;
+		System.out.println(unique);
+		System.out.println("uniqueid");
 		vehicleBean.setVehicleID(unique);
 		String result = vehicleDetails.createVehicle(vehicleBean);
+		System.out.println("about to finish");
 		return result;
 	}
 
@@ -69,9 +86,25 @@ public class AdministratorImpl implements Administrator {
 	}
 
 	
-	public boolean allotDriver(String reservationID, String driverID) {
+	public boolean findByDriverStatus(String reservationID ) {
+		ArrayList<DriverBean> drivers= driverDetails.findByDriverStatus();
+		DriverBean driver = drivers.get(0);
+		String DriverId = driver.getDriverID();
+		driver.setDriverStatus(1);
+		driverDetails.updateDriver(driver);
+		boolean result= allotDriver(DriverId, reservationID);
+		return result;
+	}
+
+	
+	public boolean allotDriver( String driverID, String reservationID) {
 		// TODO Auto-generated method stub
-		return false;
+		
+	    ReservationBean rb = reservation.viewBooking(reservationID);
+	    rb.setDriverID(driverID);
+	    rb.setBookingStatus("Confirmed");
+	    return reservation.updateReservation(rb);
+	    
 	}
 
 	

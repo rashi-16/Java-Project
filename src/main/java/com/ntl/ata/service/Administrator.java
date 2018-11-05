@@ -16,7 +16,7 @@ public interface Administrator {
 	public boolean modifyVehicle(VehicleBean vehicleBean);
 	public String addDriver(DriverBean driverBean);
 	public int deleteDriver(ArrayList<String> driverID);
-	public boolean allotDriver(String reservationID, String driverID);//change the status
+	public boolean findByDriverStatus(String reservationID );
 	public boolean modifyDriver(DriverBean driverBean);
 	public String addRoute(RouteBean routeBean);
 	public int deleteRoute(ArrayList<String> routeID);

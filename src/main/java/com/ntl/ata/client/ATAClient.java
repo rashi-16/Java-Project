@@ -393,7 +393,9 @@ public class ATAClient {
 			switch(z) {
 			case 1:
 				enterVehicle();
+				System.out.println("dgdu");
 				admin.addVehicle(vehicle);
+				System.out.println("huswd");
 				z=adminNestedMenuV();
 				break;
 			case 2:
@@ -522,9 +524,11 @@ public class ATAClient {
 				case 3:
 					System.out.println("Enter the Reservation Id");
 					String reservationID = sc.next();
-					System.out.println("Enter the driver Id");
-					String driverID = sc.next();
-					admin.allotDriver(reservationID, driverID);
+					boolean r = admin.findByDriverStatus(reservationID);
+					if(r)
+						System.out.println("Driver alloted!");
+					else
+						System.out.println("Driver alloaction failed");
 					z=adminNestedMenuD();
 					break;
 				case 4:

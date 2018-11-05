@@ -12,6 +12,7 @@ import com.ntl.ata.bean.CredentialsBean;
 import com.ntl.ata.bean.DriverBean;
 import com.ntl.ata.bean.VehicleBean;
 import com.ntl.ata.dao.VehicleDao;
+import com.ntl.ata.util.DBUtil;
 
 public class VehicleDaoImpl implements VehicleDao {
 	
@@ -25,7 +26,8 @@ public class VehicleDaoImpl implements VehicleDao {
 	public String createVehicle(VehicleBean vehicleBean) {
 		// TODO Auto-generated method stub
 		try {
-			pstmt =connection.prepareStatement("insert into ata_tbl_route values(?,?,?,?,?,?)");
+			connection =DBUtil.getDBConnection("mysql");
+			pstmt =connection.prepareStatement("insert into ata_tbl_vehicle values(?,?,?,?,?,?)");
 			pstmt.setString(1, vehicleBean.getVehicleID());
 			pstmt.setString(2, vehicleBean.getName());
 			pstmt.setString(3, vehicleBean.getType());
@@ -34,6 +36,8 @@ public class VehicleDaoImpl implements VehicleDao {
 			pstmt.setDouble(6, vehicleBean.getFarePerKM());
 			
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+		     connection.close();
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -42,6 +46,7 @@ public class VehicleDaoImpl implements VehicleDao {
 		    	 
 		    	 return "Fail";
 		     }
+		     
 			}
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
@@ -56,12 +61,16 @@ public class VehicleDaoImpl implements VehicleDao {
 		// TODO Auto-generated method stub
 		int z=0;
 		try {
+			connection =DBUtil.getDBConnection("mysql");
 			for(String x:vehicleId) {
 		pstmt =connection.prepareStatement("delete from ata_tbl_Vehicle where vehicleid = ?");
 		pstmt.setString(1,x);
 		 z= z+ pstmt.executeUpdate();
 			}
+			pstmt.close();
+		     connection.close();
 		return z;
+		
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
@@ -76,6 +85,7 @@ public class VehicleDaoImpl implements VehicleDao {
 	public boolean updateVehicle(VehicleBean vehicleBean) {
 		// TODO Auto-generated method stub
 		try {
+			connection =DBUtil.getDBConnection("mysql");
 			pstmt = connection.prepareStatement("update ata_tbl_vehicle set name=?, type=?, registrationnumber=?, seatingcapacity=?, fareperkm=? where vehicleid=?");
 			pstmt.setString(1,vehicleBean.getName());
 			pstmt.setString(2, vehicleBean.getType());
@@ -85,6 +95,8 @@ public class VehicleDaoImpl implements VehicleDao {
 			pstmt.setString(6, vehicleBean.getVehicleID());
 			
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+		     connection.close();
 			if(z>0)
 				return true;
 			else 
@@ -103,6 +115,7 @@ public class VehicleDaoImpl implements VehicleDao {
 	public VehicleBean findByID(String vehicleId) {
 		// TODO Auto-generated method stub
 		try{
+			connection =DBUtil.getDBConnection("mysql");
 			pstmt=connection.prepareStatement("select * from ata_tbl_vehicle where vehicleid=?");
 			pstmt.setString(1, vehicleId);
 			rst = pstmt.executeQuery();
@@ -114,7 +127,8 @@ public class VehicleDaoImpl implements VehicleDao {
 				int seatingcapacity=rst.getInt(5);
 				double fareperkm=rst.getDouble(6);				
 				vehicleDetails= new VehicleBean(vehicleid,name,type,registrationnum,seatingcapacity,fareperkm);
-			}}
+				}pstmt.close();
+			     connection.close();}
 		catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
 		}
@@ -143,6 +157,8 @@ public class VehicleDaoImpl implements VehicleDao {
 				vehicleDetails = new VehicleBean(vehicleid, name, type, registrationnum, seatingcapacity, fareperkm);
 				vehicleList.add(vehicleDetails);
 		}
+			pstmt.close();
+		     connection.close();
 		}catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
 		}
@@ -170,10 +186,16 @@ ArrayList<VehicleBean> vehicleList2 = new ArrayList<VehicleBean>();
 				vehicleDetails = new VehicleBean(vehicleid, name, type, registrationnum, seatingcapacity, fareperkm);
 				vehicleList2.add(vehicleDetails);
 		}
+			pstmt.close();
+		     connection.close();
 		}catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
 		}
 	return vehicleList2;
 	}
+
+
+
+
 	
 }

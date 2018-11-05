@@ -26,6 +26,20 @@ public class CustomerImpl implements Customer{
 	PaymentDao paymentd =new PaymentDaoImpl();
 	
 	
+	public CustomerImpl(VehicleDaoImpl vehicleDetails) {
+		// TODO Auto-generated constructor stub
+		this.vehicleDetails=vehicleDetails;
+	}
+
+	public CustomerImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public CustomerImpl(RouteDaoImpl routeDetails) {
+		// TODO Auto-generated constructor stub
+		this.routeDetails=routeDetails;
+	}
+
 	public ArrayList<VehicleBean> viewVehiclesByType(String vehicleType) {
 		// TODO Auto-generated method stub
 		return vehicleDetails.findByVehicleType(vehicleType);

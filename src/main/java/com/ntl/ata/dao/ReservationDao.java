@@ -13,5 +13,5 @@ public interface ReservationDao {
 	public ReservationBean viewBooking(String reservationID);
 	public ArrayList<ReservationBean> bookingDetails(LocalDate date, String source, String destination);
 	public String viewBookingStatus(String Userid);
-	
+	public boolean updateReservation(ReservationBean reservation);
 }

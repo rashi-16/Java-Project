@@ -1,38 +1,46 @@
 package com.ntl.ata.project;
 
+import static org.junit.Assert.*;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+import com.ntl.ata.dao.CredentialsDaoImplTest;
+import com.ntl.ata.dao.DriverDao‫ImplTest;
+import com.ntl.ata.service.AdministratorTest;
+import com.ntl.ata.service.CustomerTest;
+import com.ntl.ata.util.AuthenticationTest;
+import com.ntl.ata.util.UserImplTest;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-/**
- * Unit test for simple App.
- */
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	
+	CredentialsDaoImplTest.class,
+	DriverDao‫ImplTest.class,
+	AdministratorTest.class,
+	CustomerTest.class,
+	AuthenticationTest.class,
+	UserImplTest.class
+})
 public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
+extends TestCase{
+
+	public AppTest( String testName )
     {
         super( testName );
     }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
+	public static Test suite()
     {
         return new TestSuite( AppTest.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
 }

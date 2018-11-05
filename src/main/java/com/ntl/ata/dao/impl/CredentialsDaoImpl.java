@@ -45,6 +45,9 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		     pstmt.setInt(4,credentials.getLoginStatus());
 		     
 		     int z=pstmt.executeUpdate();
+		     pstmt.close();
+		     connection.close();
+		     
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -60,10 +63,7 @@ public class CredentialsDaoImpl implements CredentialsDao {
 			}
 	}
 
-	public int deleteCredentials(ArrayList<String> arr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 
 	public boolean updateCredentials(CredentialsBean credentials) {
 		// TODO Auto-generated method stub
@@ -74,6 +74,8 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		     pstmt.setInt(2,credentials.getLoginStatus());
 		     pstmt.setString(3,credentials.getUserID());
 		     int z=pstmt.executeUpdate();
+		     pstmt.close();
+		     connection.close();
 		     if(z!=0) {
 		    	 
 		    	 return true;
@@ -106,6 +108,9 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		int status=rst.getInt(4);
 		userCred= new CredentialsBean(uid, pass, type, status);
 		}
+		rst.close();
+		pstmt.close();
+		connection.close();
 		}
 		catch (SQLException e) {
 			System.out.println(" Exception while retrieving data from the database ");
@@ -126,7 +131,11 @@ public class CredentialsDaoImpl implements CredentialsDao {
 			String type=rst.getString(3);
 			int status=rst.getInt(4);
 			userCred= new CredentialsBean(uid, pass, type, status);
-		}}
+		}rst.close();
+		pstmt.close();
+		connection.close();
+			
+		}
 			catch (SQLException e) {
 				System.out.println(" Exception while retrieving data from the database ");
 				e.printStackTrace();}

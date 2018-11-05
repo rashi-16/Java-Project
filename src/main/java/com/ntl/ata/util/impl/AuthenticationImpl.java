@@ -22,12 +22,17 @@ public class AuthenticationImpl implements Authentication{
 		this.credDao = credDao;
 	}
 
+	public AuthenticationImpl(CredentialsBean credb) {
+		this.credb = credb;
+		// TODO Auto-generated constructor stub
+	}
+
 	public boolean authenticate(CredentialsBean credentialsBean) {
 		// TODO Auto-generated method stub
 		 	credb = credDao.findByID(credentialsBean.getUserID());
 			
 		 	if(credb.getPassword().equals(credentialsBean.getPassword())) {
-		 		System.out.println(" correct user Id and Password ");
+		 		System.out.println("correct user Id and Password");
 				return true;
 		 	}
 			else {
@@ -38,6 +43,7 @@ public class AuthenticationImpl implements Authentication{
 	 }
 
 	public String authorize(String userID) {
+		credb = credDao.findByID(userID);
 		if(credb.getUserID().equals(userID))
 		return credb.getUserType();
 		else

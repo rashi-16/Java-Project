@@ -34,6 +34,19 @@ public class UserImpl implements User {
 		// TODO Auto-generated constructor stub
 		this.auth = auth;
 	}
+	
+
+	public UserImpl(CredentialsDaoImpl credDao,ProfileDaoImpl profileDao ) {
+		this.credDao=credDao;
+		this.profileDao=profileDao;
+			}
+
+	
+
+	public UserImpl(CredentialsDaoImpl credDao) {
+		// TODO Auto-generated constructor stub
+		this.credDao=credDao;
+	}
 
 	public String login(CredentialsBean credentialsBean) {
 		String userType=null;

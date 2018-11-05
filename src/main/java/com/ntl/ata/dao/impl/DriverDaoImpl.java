@@ -31,7 +31,7 @@ public class DriverDaoImpl implements DriverDao {
 	public String createDriver(DriverBean driverBean) {
 		// TODO Auto-generated method stub
 		try {
-		pstmt =connection.prepareStatement("insert into ata_tbl_Driver values(?,?,?,?,?,?,?,?,?)");
+		pstmt =connection.prepareStatement("insert into ata_tbl_Driver values(?,?,?,?,?,?,?,?,?,?)");
 		pstmt.setString(1, driverBean.getDriverID());
 		pstmt.setString(2, driverBean.getName());
 		pstmt.setString(3, driverBean.getStreet());
@@ -41,8 +41,10 @@ public class DriverDaoImpl implements DriverDao {
 		pstmt.setString(7, driverBean.getPincode());
 		pstmt.setString(8, driverBean.getMobileNo());
 		pstmt.setString(9, driverBean.getLicenseNumber());
-		
+		pstmt.setInt(10, 0);
 		int z=pstmt.executeUpdate();
+		pstmt.close();
+		connection.close();
 	     if(z!=0) {
 	    	 
 	    	 return "Success";
@@ -71,6 +73,8 @@ public class DriverDaoImpl implements DriverDao {
 		pstmt.setString(1,x);
 		 z= z+ pstmt.executeUpdate();
 			}
+			pstmt.close();
+			connection.close();
 		return z;
 		}catch(SQLException e)
 		{
@@ -87,7 +91,7 @@ public class DriverDaoImpl implements DriverDao {
 	public boolean updateDriver(DriverBean driverBean) {
 		// TODO Auto-generated method stub
 		try {
-			pstmt = connection.prepareStatement("update ata_tbl_driver set name=?, street=?, location=?, city=?, state=?, pincode=?, mobileno=?,LicenseNumber=? where driverid=?");
+			pstmt = connection.prepareStatement("update ata_tbl_driver set name=?, street=?, location=?, city=?, state=?, pincode=?, mobileno=?,LicenseNumber=?, driverstatus=? where driverid=?");
 			pstmt.setString(1,driverBean.getName());
 			pstmt.setString(2, driverBean.getStreet());
 			pstmt.setString(3, driverBean.getLocation());
@@ -97,7 +101,10 @@ public class DriverDaoImpl implements DriverDao {
 			pstmt.setString(7, driverBean.getMobileNo());
 			pstmt.setString(8, driverBean.getLicenseNumber());
 			pstmt.setString(9, driverBean.getDriverID());
+			pstmt.setInt(10, driverBean.getDriverStatus());
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+			connection.close();
 			if(z>0)
 				return true;
 			else 
@@ -129,9 +136,12 @@ public class DriverDaoImpl implements DriverDao {
 				String pincode=rst.getString(7);
 				String mobileno=rst.getString(8);
 				String license=rst.getString(9);
-				
-				driverDetails= new DriverBean(driverid, name, street, location, city, state, pincode, mobileno, license);
-			}}
+				int driverStatus= rst.getInt(10);
+				driverDetails= new DriverBean(driverid, name, street, location, city, state, pincode, mobileno, license,driverStatus);
+			}
+			rst.close();
+			pstmt.close();
+			connection.close();}
 		catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
 		}
@@ -143,10 +153,39 @@ public class DriverDaoImpl implements DriverDao {
 	
 	public ArrayList<DriverBean> findAll() {
 		// TODO Auto-generated method stub
-		
-		
-		
 		return null;
+	}
+
+
+	@Override
+	public ArrayList<DriverBean> findByDriverStatus() {
+		ArrayList<DriverBean> driverList = new ArrayList();
+		try{
+			pstmt=connection.prepareStatement("select * from ata_tbl_driver where driverstatus=?");
+			pstmt.setInt(1, 1);
+			rst = pstmt.executeQuery();
+			while(rst.next()) {
+				String driverid=rst.getString(1);
+				String name=rst.getString(2);
+				String street=rst.getString(3);
+				String location=rst.getString(4);
+				String city=rst.getString(5);
+				String state=rst.getString(6);
+				String pincode=rst.getString(7);
+				String mobileno=rst.getString(8);
+				String license=rst.getString(9);
+				int driverStatus= rst.getInt(10);
+				driverDetails= new DriverBean(driverid, name, street, location, city, state, pincode, mobileno, license,driverStatus);
+				driverList.add(driverDetails);
+			}
+			rst.close();
+			pstmt.close();
+			connection.close();
+		}catch(SQLException e) {
+			System.out.println("Sql exception "+ e);
+		}
+		
+		return driverList;
 	}
 
 }

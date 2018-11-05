@@ -44,6 +44,8 @@ public class ReservationDaoImpl implements ReservationDao{
 			pstmt.setString(10, reservation.getBoardingPoint());
 			pstmt.setString(11, reservation.getDropPoint());
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+			connection.close();
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -66,6 +68,8 @@ public class ReservationDaoImpl implements ReservationDao{
 		pstmt.setString(1,UserId);
 		pstmt.setString(2,reservationID);
 		int z= pstmt.executeUpdate();
+		pstmt.close();
+		connection.close();
 		if(z>0)
 			return true;
 		else return false;
@@ -103,6 +107,9 @@ public class ReservationDaoImpl implements ReservationDao{
 				bookingDetails.add(reservationBean);
 				
 			}
+			rst.close();
+			pstmt.close();
+			connection.close();
 		}catch(SQLException e) {
 			System.out.println("sql error "+e);
 		}
@@ -130,6 +137,9 @@ public class ReservationDaoImpl implements ReservationDao{
 				reservationBean = new ReservationBean(reservationId,userid,routeid,bookingD,journeyD,vehiceid,driverid,bookingstatus,totalFare,pickup, drop);
 				
 			}
+			rst.close();
+			pstmt.close();
+			connection.close();
 		}catch(SQLException e) {
 			System.out.println("sql error "+e);
 		}
@@ -145,12 +155,36 @@ public class ReservationDaoImpl implements ReservationDao{
 			rst = pstmt.executeQuery();
 			while(rst.next()) {
 			 bookingstatus = rst.getString(8);
-			}}catch(SQLException e) {
+			}
+			rst.close();
+			pstmt.close();
+			connection.close();}catch(SQLException e) {
 				System.out.println("sql error "+e);}
 			if(bookingstatus.equals("Booked"))
 					return "Booking Successful";
 			else
 				return "No vehicle booked";
+	}
+
+	public boolean updateReservation(ReservationBean reservation) {
+		// TODO Auto-generated method stub
+		try {
+			pstmt = connection.prepareStatement("update ata_tbl_reservation set driverid=?, bookingstatus=? where reservationid=?");
+			pstmt.setString(1,reservation.getDriverID());
+			pstmt.setString(2, reservation.getBookingStatus());
+			pstmt.setString(3, reservation.getReservationID());
+			int z=pstmt.executeUpdate();
+			pstmt.close();
+			connection.close();
+			if(z>0)
+				return true;
+			else 
+				return false;
+		}catch(SQLException e)
+		{
+			System.out.println("Sql exception"+ e);
+			return false;
+		}
 	}
 
 }

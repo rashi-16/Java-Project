@@ -38,6 +38,7 @@ public class RouteDaoImpl implements RouteDao {
 			pstmt.setInt(4, routeBean.getDistance());
 			pstmt.setInt(5, routeBean.getTravelDuration());
 			int z=pstmt.executeUpdate();
+			
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -51,6 +52,19 @@ public class RouteDaoImpl implements RouteDao {
 				System.out.println("Sql exception"+ e1);
 				return "ERROR";
 			}
+		finally
+		
+		{
+			try {
+				pstmt.close();
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			
+		}
 	}
 	
 	
@@ -65,6 +79,8 @@ public class RouteDaoImpl implements RouteDao {
 		pstmt.setString(1,x);
 		 z= z+ pstmt.executeUpdate();
 			}
+			pstmt.close();
+			connection.close();
 		return z;
 		}catch(SQLException e)
 		{
@@ -86,6 +102,8 @@ public class RouteDaoImpl implements RouteDao {
 			pstmt.setInt(4,routeBean.getTravelDuration());
 			pstmt.setString(5,routeBean.getRouteID());
 			int z=pstmt.executeUpdate();
+			pstmt.close();
+			connection.close();
 			if(z>0)
 				return true;
 			else 
@@ -115,7 +133,10 @@ public class RouteDaoImpl implements RouteDao {
 				int travelDuration=rst.getInt(5);
 				route= new RouteBean(routeid, source, destination, distance, travelDuration);
 				
-			}}
+			}
+			rst.close();
+			pstmt.close();
+			connection.close();}
 		catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
 		}
@@ -140,6 +161,9 @@ public class RouteDaoImpl implements RouteDao {
 				route= new RouteBean(routeid, source, destination, distance, travelDuration);
 				routeList.add(route);
 			}
+			rst.close();
+			pstmt.close();
+			connection.close();
 		}catch(SQLException e)
 		{
 			System.out.println("sqlException " +e);

@@ -16,42 +16,57 @@ import com.ntl.ata.util.impl.AuthenticationImpl;
 
 public class AuthenticationTest {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+	 CredentialsBean cred1 =new CredentialsBean("12Rashi16","Rashi@16","A",0);
+	 CredentialsBean cred2 =new CredentialsBean("Ra2345","rashi@123","C",0);
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
+	
+	CredentialsDaoImpl creddao=mock(CredentialsDaoImpl.class);
+	AuthenticationImpl auth = new AuthenticationImpl(creddao);
+	
 
 	@Test
 	public final void testAuthenticate() {
-		CredentialsBean cred  =new CredentialsBean("12Rashi16","Rashi@16","A",0);
-		CredentialsBean mockCb = mock(CredentialsBean.class);
-		CredentialsDaoImpl creddao=mock(CredentialsDaoImpl.class);
-		creddao = spy(CredentialsDaoImpl.class);
-		when(creddao.findByID("12Rashi16")).thenReturn(cred);
-		AuthenticationImpl auth = new AuthenticationImpl(creddao);
-		when(auth.authenticate(cred)).thenReturn(true);
+	
+		when(creddao.findByID("12Rashi16")).thenReturn(cred1);
 		
-	}
+		AuthenticationImpl auth = new AuthenticationImpl(creddao);
+		boolean result = auth.authenticate(cred1);
+		assertEquals(true,result);
+		}
+	
+	
+	
+	
 
 	@Test
 	public final void testAuthorize() {
+	
 		
+		when(creddao.findByID("12Rashi16")).thenReturn(cred1);
+		when(creddao.findByID("Ra2345")).thenReturn(cred2);
+		when(creddao.findByID("Ra2367")).thenReturn(cred2);
+		String result = auth.authorize("12Rashi16");
+		 assertEquals("A",result);
+		 result = auth.authorize("Ra2345");
+		 assertEquals("C",result);
+		 result = auth.authorize("Ra2367");
+		 assertEquals("invalid",result);
 	}
+	
+	
+	
+	
 
 	@Test
 	public final void testChangeLoginStatus() {
 		
-	}
+		//CredentialsDaoImpl creddao=mock(CredentialsDaoImpl.class);
+		when(creddao.findByID("12Rashi16")).thenReturn(cred1);
+		creddao.updateCredentials(cred1);
+		boolean res = auth.changeLoginStatus(cred1, 1);
+		assertEquals(true,res);
+		 res = auth.changeLoginStatus(cred1, 0);
+		assertEquals(true,res);
+			}
 
 }

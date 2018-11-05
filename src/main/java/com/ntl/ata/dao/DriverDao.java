@@ -11,6 +11,7 @@ public interface DriverDao {
 	public boolean updateDriver(DriverBean driverBean);
 	public DriverBean findByID(String driverId);
 	public ArrayList<DriverBean> findAll();
+	ArrayList<DriverBean> findByDriverStatus();
 
 
 
