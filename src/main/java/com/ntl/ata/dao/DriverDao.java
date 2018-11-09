@@ -10,8 +10,7 @@ public interface DriverDao {
 	public int deleteDriver(ArrayList<String> driverId );
 	public boolean updateDriver(DriverBean driverBean);
 	public DriverBean findByID(String driverId);
-	public ArrayList<DriverBean> findAll();
-	ArrayList<DriverBean> findByDriverStatus();
+	public ArrayList<DriverBean> findByDriverStatus();
 
 
 

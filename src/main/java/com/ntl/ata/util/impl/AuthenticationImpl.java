@@ -32,7 +32,7 @@ public class AuthenticationImpl implements Authentication{
 		 	credb = credDao.findByID(credentialsBean.getUserID());
 			
 		 	if(credb.getPassword().equals(credentialsBean.getPassword())) {
-		 		System.out.println("correct user Id and Password");
+		 		//System.out.println("correct user Id and Password");
 				return true;
 		 	}
 			else {

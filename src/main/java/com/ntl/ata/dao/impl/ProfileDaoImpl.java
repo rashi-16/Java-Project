@@ -18,6 +18,14 @@ public class ProfileDaoImpl implements ProfileDao{
 	PreparedStatement pstmt;
 	ResultSet rst;
 
+	/**
+	 * 
+	 */
+	public ProfileDaoImpl() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public String createProfile(ProfileBean profile) {
 		// TODO Auto-generated method stub
 		try {
@@ -37,8 +45,7 @@ public class ProfileDaoImpl implements ProfileDao{
 		     pstmt.setString(12, profile.getEmailID());
 		    
 		     int z=pstmt.executeUpdate();
-				pstmt.close();
-				connection.close();
+				
 		     if(z!=0) {
 		    	 
 		    	 return "Success";
@@ -50,6 +57,9 @@ public class ProfileDaoImpl implements ProfileDao{
 			}
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
+				return "ERROR";
+			}catch(Exception e) {
+				System.out.println("Exception occurred"+e);
 				return "ERROR";
 			}
 	}

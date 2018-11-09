@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+//import java.util.logging.Logger;
 
 import javax.swing.text.DefaultEditorKit.CutAction;
+
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 
@@ -28,20 +31,23 @@ import com.ntl.ata.service.impl.CustomerImpl;
 import com.ntl.ata.util.User;
 import com.ntl.ata.util.impl.UserImpl;
 
+
 public class ATAClient {
+	
+	static Logger log  =Logger.getLogger(ATAClient.class);
 	 static Scanner sc =new Scanner(System.in);
 	 static  User user= new UserImpl();
 	 static Administrator admin = new AdministratorImpl();
 	 static Customer customer= new CustomerImpl();
 	 static DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 	 
-	  static CredentialsBean loggedInUser;
-	  static ProfileBean profile;
-	  static VehicleBean vehicle;
-	  static RouteBean route;
-	  static DriverBean driver;
-	  static PaymentBean payment;
-	  static ReservationBean reserve;
+	  public static CredentialsBean loggedInUser;
+	  public static ProfileBean profile;
+	  public static VehicleBean vehicle;
+	  public static RouteBean route;
+	  public static DriverBean driver;
+	  public static PaymentBean payment;
+	  public static ReservationBean reserve;
 	
 	  
 	  
@@ -293,6 +299,9 @@ public class ATAClient {
 		System.out.println("Enter the Drop Point");
 		String dPoint =sc.next();
 		reserve.setDropPoint(dPoint);
+		System.out.println("Enter the vehicle Id");
+		String vid=sc.next();
+		reserve.setVehicleID(vid);
 
 	}
 	
@@ -362,24 +371,10 @@ public class ATAClient {
 		System.out.println("11. Change Password");
 		System.out.println("12. Logout");
 		int x=sc.nextInt();
-				return x;
+		return x;
 		}
 	
-	
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		System.out.println("				* * * * * * * * * * * *");
-		System.out.println("				* EasyGo Travel Agency *");
-		System.out.println("				* * * * * * * * * * * *");
-		System.out.println("Welcome to Dhanno Travels Ltd., an Automated Travel Agency ");
-		System.out.print("\n\n\n");
-		System.out.print("1.Login(Press L)\n2.Register(Press R)\n ");
-		String choice=sc.next();
-		if(choice.equals("L")) {
-		String result=validateUser();
-		if(result.equals("A")) {
-		System.out.println(" Welcome Administrator ");
+	static public void adminFunctions() {
 		
 		int z;
 		boolean loop=true, loop2=true;
@@ -393,11 +388,11 @@ public class ATAClient {
 			switch(z) {
 			case 1:
 				enterVehicle();
-				System.out.println("dgdu");
-				admin.addVehicle(vehicle);
-				System.out.println("huswd");
+				String d =admin.addVehicle(vehicle);
+				System.out.println("Vehicle Id is: "+d);
 				z=adminNestedMenuV();
 				break;
+			
 			case 2:
 				
 				System.out.println("Enter the number of vehicles to be deleted");
@@ -429,10 +424,15 @@ public class ATAClient {
 			case 4:
 				
 				System.out.println("Enter the Id of the vehicle to be modified");
-				String id = sc.next();
-				vehicle.setVehicleID(id);
+				String vid = sc.next();
+				vehicle.setVehicleID(vid);
+				System.out.println("what is the issue?");
 				enterVehicle();
-				admin.modifyVehicle(vehicle);
+				boolean v =admin.modifyVehicle(vehicle);
+				if(v)
+					System.out.println("Vehicle modified successfully");
+				else
+					System.out.println("Failed to modify vehicle");
 				z=adminNestedMenuV();
 				break;
 
@@ -452,7 +452,8 @@ public class ATAClient {
 				
 				case 1:
 					enterRoute();
-					admin.addRoute(route);
+					String re =admin.addRoute(route);
+					System.out.println("Route Id is: "+re);
 					z=adminNestedMenuR();
 					break;
 				case 2:
@@ -487,7 +488,11 @@ public class ATAClient {
 					String id = sc.next();
 					route.setRouteID(id);
 					enterRoute();
-					admin.modifyRoute(route);
+					boolean l=admin.modifyRoute(route);
+					if(l)
+						System.out.println("Route modified successfully");
+					else
+						System.out.println("Failed to update route");
 					z=adminNestedMenuR();
 					break;
 				default:
@@ -504,7 +509,8 @@ public class ATAClient {
 				switch(z) {
 				case 1:
 					enterDriver();
-					admin.addDriver(driver);
+					String res =admin.addDriver(driver);
+					System.out.println("Driver Id is: "+res);
 					z=adminNestedMenuD();
 					break;
 				case 2:
@@ -523,12 +529,18 @@ public class ATAClient {
 					break;
 				case 3:
 					System.out.println("Enter the Reservation Id");
+					try {
 					String reservationID = sc.next();
 					boolean r = admin.findByDriverStatus(reservationID);
 					if(r)
 						System.out.println("Driver alloted!");
 					else
-						System.out.println("Driver alloaction failed");
+						System.out.println("Driver allocation failed");
+					}catch(Exception e) {
+						System.out.println(e);
+					}
+					
+					
 					z=adminNestedMenuD();
 					break;
 				case 4:
@@ -536,7 +548,11 @@ public class ATAClient {
 					String id = sc.next();
 					driver.setDriverID(id);
 					enterDriver();
-					admin.modifyDriver(driver);
+					boolean u= admin.modifyDriver(driver);
+					if(u)
+					System.out.println("Driver Updated Successfully!");
+					else
+						System.out.println("Error in updating the driver.");
 					z=adminNestedMenuD();
 					break;
 				default:
@@ -552,12 +568,25 @@ public class ATAClient {
 			LocalDate jDate = LocalDate.parse(d, formatter);
 			System.out.println("Enter the source location");
 			String s=sc.next();
-			System.out.println("Enter the drop loaction");
+			System.out.println("Enter the drop location");
 			String dr = sc.next();
 			ArrayList<ReservationBean> arr = admin.viewBookingDetails(jDate, s, dr);
-			for(ReservationBean rb : arr)
-				System.out.println(rb);
-			
+			for(ReservationBean rb : arr) {
+				System.out.println("Reservation Id: "+rb.getReservationID());
+				System.out.println("UserId: "+rb.getUserID());
+				System.out.println("RouteId "+rb.getRouteID());
+				System.out.println("VehicleId "+rb.getVehicleID());
+				System.out.println("Journey Date "+rb.getJourneyDate());
+				System.out.println("Booking Date:"+rb.getBookingDate());
+				System.out.println("Driver Id "+rb.getDriverID());
+				System.out.println("Booking Status "+rb.getBookingStatus());
+				System.out.println("Total fare "+rb.getTotalFare());
+				System.out.println("Boarding Point "+rb.getBoardingPoint());
+				System.out.println("Drop Point "+rb.getDropPoint());
+				System.out.println(" ");
+			}
+			x=admin_menu();
+			break;
 		case 5:
 			passwordChange();
 			 x=admin_menu();
@@ -568,129 +597,175 @@ public class ATAClient {
 			break;			
 		}
 		}
+		
+	}
+	
+	
+	
+	
+	
+	static public void customerFunctions(){
+		
+		int k;
+		boolean loopc=true;
+		while(loopc) {
+			k=customer_menu();	
+		switch(k) {
+		case 1:
+			System.out.println("Enter the vehicle type:(bike/scooty/Share/Hatchback/Sedan/MPV/SUV/Crossover/Convertible/)");
+			String type = sc.next();
+			ArrayList<VehicleBean> vList = customer.viewVehiclesByType(type);
+			for(VehicleBean v :vList) {
+				System.out.println("Vehicle ID: " +v.getVehicleID());
+				System.out.println("Vehicle Name: " +v.getName());
+				System.out.println("Vehicle Type: " +v.getType());
+				System.out.println("Vehicle Registration Number: "+v.getRegistrationNumber());
+				System.out.println("Vehicle Seating Capacity: " +v.getSeatingCapacity());
+				System.out.println("FareperKm:"+v.getFarePerKM());
+				//System.out.println(v.toString());
+			}
+			k=customer_menu();
+			break;
+		case 2:
+			System.out.println("Enter the number of seats(1/2/4/6/7)");
+			int seats = sc.nextInt();
+			ArrayList<VehicleBean> vList2 = customer.viewVehicleBySeats(seats);
+			for(VehicleBean v :vList2) {
+				System.out.println("Vehicle ID: " +v.getVehicleID());
+				System.out.println("Vehicle Name: " +v.getName());
+				System.out.println("Vehicle Type: " +v.getType());
+				System.out.println("Vehicle Registration Number: "+v.getRegistrationNumber());
+				System.out.println("Vehicle Seating Capacity: " +v.getSeatingCapacity());
+				System.out.println("FareperKm:"+v.getFarePerKM());
+				//System.out.println(v.toString());
+			}
+			k=customer_menu();
+			break;
+		case 3:
+			System.out.println("Following are the routes");
+			ArrayList<RouteBean> routes = customer.viewAllRoutes();
+			for(RouteBean r :routes) {
+				System.out.println("Route ID: "+r.getRouteID());
+				System.out.println("Source: "+r.getSource());
+				System.out.println("Destination: "+r.getDestination());
+				System.out.println("Distance: "+r.getDistance());
+				System.out.println("Travel Duration: "+r.getTravelDuration());
+				//System.out.println(r.toString());
+			}
+			k=customer_menu();
+			break;
+		case 4:
+			System.out.println("VEHICLE BOOKING FORM");
+		
+			enterReservationDetails();
+			String res=customer.bookVehicle(reserve);
+			System.out.println("Vehicle Booking Id: "+res);
+			k=customer_menu();
+			break;
+		case 5:
+			System.out.println("Cancel Booking");
+			System.out.println("Enter userID");
+			String uid = sc.next();
+			System.out.println("Enter reservationID");
+			String rid = sc.next();
+			boolean s =customer.cancelBooking(uid, rid);
+			if(s) {
+				System.out.println("Booking cancelled successfully!");
+			}
+			
+			else
+				System.out.println("Booking Cancellation Failed!");
+			k=customer_menu();
+			break;
+		case 6:
+			System.out.println("View booking details");
+			System.out.println("Enter reservation Id: ");
+			String resevationId = sc.next();
+			ReservationBean rb = customer.viewBookingDetails(resevationId);
+			System.out.println(rb);
+			k=customer_menu();
+			break;
+		case 7:
+			System.out.println("Booking details");
+			System.out.println("Enter reservation Id:");
+			String reserveid = sc.next();
+			ReservationBean rbean = customer.printBookingDetails(reserveid);
+			System.out.println(rbean);
+			k=customer_menu();
+			break;
+		case 8:
+			System.out.println("View booking status");
+			System.out.println("Enter your user ID");
+			String userid = sc.next();
+			String r=customer.viewBookingStatus(userid);
+			System.out.println("Booking status: "+r);
+			k=customer_menu();
+			break;
+		case 9:
+			System.out.println("Pay using your saved card");
+			System.out.println("Enter your user Id");
+			uid =sc.next();
+			System.out.println("Enter your card number");
+			String cnum = sc.next();
+			boolean out = customer.findByCardNumber(uid,cnum);
+			if(out)
+			System.out.println("Payment done successfully");
+			else 
+				System.out.println("Payment failed!");
+			k=customer_menu();
+			break;
+		case 10:
+			System.out.println("Make payment");
+			enterPaymentDetails();
+			String stat =customer.processPayment(payment);
+			System.out.println("Payment status: "+stat);
+			k=customer_menu();
+			break;
+		case 11:
+			passwordChange();
+			k=customer_menu();
+			 break;
+		case 12:
+			LogMeOut();
+			loopc=false;
+			break;	
+			
+		
+		}}
+		
+	}
+	
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		log.info("Program is getting started");
+		
+		System.out.println("				* * * * * * * * * * * *");
+		System.out.println("				* EasyGo Travel Agency *");
+		System.out.println("				* * * * * * * * * * * *");
+		System.out.println("Welcome to EasyGo Travels Ltd., an Automated Travel Agency ");
+		System.out.print("\n\n\n");
+		System.out.print("1.Login(Press L)\n2.Register(Press R)\n ");
+		String choice=sc.next();
+		if(choice.equals("L")) {
+		String result=validateUser();
+		if(result.equals("A")) {
+		System.out.println(" Welcome Administrator ");
+		adminFunctions();
+		
 		}
 		
 		
-		
-		
-		
-		else if(result.equals("C")) {
+	else if(result.equals("C")) {
 			//return result;
 			System.out.println("Welcome customer");
-			
-			
-			int k;
-			boolean loopc=true;
-			while(loopc) {
-				k=admin_menu();	
-			switch(k) {
-			case 1:
-				System.out.println("Enter the vehicle type:(bike/scooty/Share/Hatchback/Sedan/MPV/SUV/Crossover/Convertible/");
-				String type = sc.next();
-				ArrayList<VehicleBean> vList = customer.viewVehiclesByType(type);
-				for(VehicleBean v :vList) {
-					System.out.println("v");
-				}
-				k=admin_menu();
-				break;
-			case 2:
-				System.out.println("Enter the number of seats(1/2/4/6/7");
-				int seats = sc.nextInt();
-				ArrayList<VehicleBean> vList2 = customer.viewVehicleBySeats(seats);
-				for(VehicleBean v :vList2) {
-					System.out.println("v");
-				}
-				k=admin_menu();
-				break;
-			case 3:
-				System.out.println("Following are the routes");
-				ArrayList<RouteBean> routes = customer.viewAllRoutes();
-				for(RouteBean r :routes) {
-					System.out.println(r);
-				}
-				k=admin_menu();
-				break;
-			case 4:
-				System.out.println("VEHICLE BOOKING FORM");
-			
-				enterReservationDetails();
-				String res=customer.bookVehicle(reserve);
-				System.out.println("Vehicle Booking Status: "+res);
-				k=admin_menu();
-				break;
-			case 5:
-				System.out.println("Cancel Booking");
-				System.out.println("Enter userID");
-				String uid = sc.next();
-				System.out.println("Enter reservationID");
-				String rid = sc.next();
-				boolean s =customer.cancelBooking(uid, rid);
-				if(s) {
-					System.out.println("Booking cancelled successfully!");
-				}
-				
-				else
-					System.out.println("Booking Cancellation Failed!");
-				k=admin_menu();
-				break;
-			case 6:
-				System.out.println("View booking details");
-				String resevationId = sc.next();
-				ReservationBean rb = customer.viewBookingDetails(resevationId);
-				System.out.println(rb);
-				k=admin_menu();
-				break;
-			case 7:
-				System.out.println("Booking details");
-				String reserveid = sc.next();
-				ReservationBean rbean = customer.printBookingDetails(reserveid);
-				System.out.println(rbean);
-				k=admin_menu();
-				break;
-			case 8:
-				System.out.println("View booking status");
-				System.out.println("Enter your user ID");
-				String userid = sc.next();
-				String r=customer.viewBookingStatus(userid);
-				System.out.println("Booking status: "+r);
-				k=admin_menu();
-				break;
-			case 9:
-				System.out.println("Pay using your saved card");
-				System.out.println("Enter your user Id");
-				uid =sc.next();
-				System.out.println("Enter your card number");
-				String cnum = sc.next();
-				boolean out = customer.findByCardNumber(uid,cnum);
-				if(out)
-				System.out.println("Payment done successfully");
-				else 
-					System.out.println("Payment failed!");
-				k=admin_menu();
-				break;
-			case 10:
-				System.out.println("Make payment");
-				enterPaymentDetails();
-				String stat =customer.processPayment(payment);
-				System.out.println("Payment status: "+stat);
-				k=admin_menu();
-				break;
-			case 11:
-				passwordChange();
-				k=admin_menu();
-				 break;
-			case 12:
-				LogMeOut();
-				loopc=false;
-				break;	
-				
-			
-			}}
-			
+			customerFunctions();
+		
 			}
 		else if(result.equals("Invalid"))
 		{
-			System.out.println("invalid user Please SignUP");
+			System.out.println("Invalid user Please SignUP");
 			registerUser();
 		}
 		else {
@@ -699,12 +774,18 @@ public class ATAClient {
 			}
 		}
 		
-		else if(choice.equals("R"))
+		else if(choice.equals("R")) {
 			registerUser();
-		else
+			customerFunctions();
+		}
+		else {
+			System.out.println("Wrong option: ");
+		System.out.println("Change your password");
 			passwordChange();
+			validateUser();
+			customerFunctions();
 
-		
+		}
 		
 
 	}

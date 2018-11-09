@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import com.ntl.ata.bean.DriverBean;
 import com.ntl.ata.dao.DriverDao;
 import com.ntl.ata.util.DBUtil;
@@ -17,7 +19,7 @@ public class DriverDaoImpl implements DriverDao {
 	Statement statement;
 	PreparedStatement pstmt;
 	ResultSet rst;
-	
+	DataSource dataSource;
 	DriverBean driverDetails;
 	
 	static {
@@ -25,9 +27,17 @@ public class DriverDaoImpl implements DriverDao {
 	}
 	
 	
-	
+	public DriverDaoImpl() {
+		
+	}
 	//inserting a record into driver table
 	
+	public DriverDaoImpl(DataSource dataSource) {
+		// TODO Auto-generated constructor stub
+		this.dataSource=dataSource;
+	}
+
+
 	public String createDriver(DriverBean driverBean) {
 		// TODO Auto-generated method stub
 		try {
@@ -43,8 +53,7 @@ public class DriverDaoImpl implements DriverDao {
 		pstmt.setString(9, driverBean.getLicenseNumber());
 		pstmt.setInt(10, 0);
 		int z=pstmt.executeUpdate();
-		pstmt.close();
-		connection.close();
+		
 	     if(z!=0) {
 	    	 
 	    	 return "Success";
@@ -56,6 +65,10 @@ public class DriverDaoImpl implements DriverDao {
 		}
 	catch (SQLException e1){
 			System.out.println("Sql exception"+ e1);
+			return "ERROR";
+		}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return "ERROR";
 		}
 	}
@@ -73,12 +86,14 @@ public class DriverDaoImpl implements DriverDao {
 		pstmt.setString(1,x);
 		 z= z+ pstmt.executeUpdate();
 			}
-			pstmt.close();
-			connection.close();
+			
 		return z;
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
+			return -1;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return -1;
 		}
 	}
@@ -91,7 +106,7 @@ public class DriverDaoImpl implements DriverDao {
 	public boolean updateDriver(DriverBean driverBean) {
 		// TODO Auto-generated method stub
 		try {
-			pstmt = connection.prepareStatement("update ata_tbl_driver set name=?, street=?, location=?, city=?, state=?, pincode=?, mobileno=?,LicenseNumber=?, driverstatus=? where driverid=?");
+			pstmt = connection.prepareStatement("Update ata_tbl_driver set name=?, street=?, location=?, city=?, state=?, pincode=?, mobileno=?,LicenseNumber=?, driverstatus=? where driverid=?");
 			pstmt.setString(1,driverBean.getName());
 			pstmt.setString(2, driverBean.getStreet());
 			pstmt.setString(3, driverBean.getLocation());
@@ -103,8 +118,7 @@ public class DriverDaoImpl implements DriverDao {
 			pstmt.setString(9, driverBean.getDriverID());
 			pstmt.setInt(10, driverBean.getDriverStatus());
 			int z=pstmt.executeUpdate();
-			pstmt.close();
-			connection.close();
+			
 			if(z>0)
 				return true;
 			else 
@@ -112,6 +126,9 @@ public class DriverDaoImpl implements DriverDao {
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
+			return false;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return false;
 		}
 	}
@@ -139,30 +156,24 @@ public class DriverDaoImpl implements DriverDao {
 				int driverStatus= rst.getInt(10);
 				driverDetails= new DriverBean(driverid, name, street, location, city, state, pincode, mobileno, license,driverStatus);
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();}
+			}
 		catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
+		} catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
 		}
 	return driverDetails;
 	}
 
 	
 	
-	
-	public ArrayList<DriverBean> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-
-	@Override
 	public ArrayList<DriverBean> findByDriverStatus() {
 		ArrayList<DriverBean> driverList = new ArrayList();
 		try{
 			pstmt=connection.prepareStatement("select * from ata_tbl_driver where driverstatus=?");
-			pstmt.setInt(1, 1);
+			pstmt.setInt(1, 0);
 			rst = pstmt.executeQuery();
 			while(rst.next()) {
 				String driverid=rst.getString(1);
@@ -178,11 +189,12 @@ public class DriverDaoImpl implements DriverDao {
 				driverDetails= new DriverBean(driverid, name, street, location, city, state, pincode, mobileno, license,driverStatus);
 				driverList.add(driverDetails);
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();
+			
 		}catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
 		}
 		
 		return driverList;

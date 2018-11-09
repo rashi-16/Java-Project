@@ -43,28 +43,52 @@ public class AdministratorImpl implements Administrator {
 		int num=(int)(Math.round(Math.random()*10000));
 		
 		String unique=temp+num;
-		System.out.println(unique);
-		System.out.println("uniqueid");
 		vehicleBean.setVehicleID(unique);
+		try {
 		String result = vehicleDetails.createVehicle(vehicleBean);
-		System.out.println("about to finish");
-		return result;
+		if(result.equals("Success"))
+		return unique;
+		else 
+			return result;
+		}
+		catch(Exception e) {
+			System.out.println("Exception " +e);
+			return null;
+		}
 	}
 
 	public int deleteVehicle(ArrayList<String> vehicleID) {
 		// TODO Auto-generated method stub
+		try {
 		return vehicleDetails.deleteVehicle(vehicleID);
+		}
+		catch(Exception e){
+			System.out.println("Exception occurred "+e);
+			return -1;
+		}
 	}
 
 	public VehicleBean viewVehicle(String vehicleID) {
 		// TODO Auto-generated method stub
+		try {
 		return vehicleDetails.findByID(vehicleID);
+		}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
+		}
 	}
 
 	public boolean modifyVehicle(VehicleBean vehicleBean) {
 		// TODO Auto-generated method stub
+		try {
 		boolean res= vehicleDetails.updateVehicle(vehicleBean);
 		return res;
+		}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return false;
+		}
 	}
 
 	public String addDriver(DriverBean driverBean) {
@@ -74,16 +98,31 @@ public class AdministratorImpl implements Administrator {
 		int num=(int)(Math.round(Math.random()*10000));
 		String unique=temp+num;
 		driverBean.setDriverID(unique);
+		try {
 		String result = driverDetails.createDriver(driverBean);
-		return result;
+		if(result.equals("Success"))
+			return unique;
+			else 
+				return result;
+		}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
+		}
 	}
 
 	
 	public int deleteDriver(ArrayList<String> driverID) {
 		// TODO Auto-generated method stub
+		try {
 		int result = driverDetails.deleteDriver(driverID);
 		return result;
+	}catch(Exception e) {
+		System.out.println("Exception occurred"+e);
+		return -1;
 	}
+		}
+	
 
 	
 	public boolean findByDriverStatus(String reservationID ) {
@@ -92,8 +131,13 @@ public class AdministratorImpl implements Administrator {
 		String DriverId = driver.getDriverID();
 		driver.setDriverStatus(1);
 		driverDetails.updateDriver(driver);
+		try {
 		boolean result= allotDriver(DriverId, reservationID);
 		return result;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return false;
+		}
 	}
 
 	
@@ -103,15 +147,25 @@ public class AdministratorImpl implements Administrator {
 	    ReservationBean rb = reservation.viewBooking(reservationID);
 	    rb.setDriverID(driverID);
 	    rb.setBookingStatus("Confirmed");
+	    try {
 	    return reservation.updateReservation(rb);
+	    }catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return false;
+	    }
 	    
 	}
 
 	
 	public boolean modifyDriver(DriverBean driverBean) {
 		// TODO Auto-generated method stub
+		try {
 		boolean res= driverDetails.updateDriver(driverBean);
 		return res;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return false;
+		}
 	}
 
 	
@@ -122,32 +176,62 @@ public class AdministratorImpl implements Administrator {
 		int num = (int)(Math.round(Math.random()*10000));
 		String uniqueId = source+dest+num;
 		routeBean.setRouteID(uniqueId);
-		String res= routeDetails.createRoute(routeBean);	
-		return res;
+		
+		try {
+		String result= routeDetails.createRoute(routeBean);	
+		if(result.equals("Success"))
+			return uniqueId;
+			else 
+				return result;
+	}catch(Exception e) {
+		System.out.println("Exception occurred"+e);
+		return null;
+	}
 	}
 
 	
 	public int deleteRoute(ArrayList<String> routeID) {
 		// TODO Auto-generated method stub
+		try {
 		return routeDetails.deleteRoute(routeID);
+		}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return -1;
+		}
 	}
 
 	
 	public RouteBean viewRoute(String routeID) {
 		// TODO Auto-generated method stub
+		try {
 		return routeDetails.findByID(routeID);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
+		}
 	}
 
 	
 	public boolean modifyRoute(RouteBean routeBean) {
 		// TODO Auto-generated method stub
+		try {
 		return routeDetails.updateRoute(routeBean);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return false;
+		}
 	}
 
 	
 	public ArrayList<ReservationBean> viewBookingDetails(LocalDate journeyDate, String source, String destination) {
 		// TODO Auto-generated method stub
+		try {
 		return reservation.bookingDetails(journeyDate, source, destination);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
+		}
 	}
 
 }

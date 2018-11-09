@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import com.ntl.ata.bean.ReservationBean;
 import com.ntl.ata.dao.ReservationDao;
 import com.ntl.ata.util.DBUtil;
@@ -20,13 +22,27 @@ public class ReservationDaoImpl implements ReservationDao{
 	PreparedStatement pstmt;
 	ResultSet rst;
 	ReservationBean reservationBean;
+	DataSource dataSource;
 	
-	static {
+
+	public ReservationDaoImpl(DataSource dataSource) {
+	this.dataSource=dataSource;
+	try {
+		this.connection=dataSource.getConnection();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	}
+
+	/**
+	 * 
+	 */
+	public ReservationDaoImpl() {
+		super();
 		connection=DBUtil.getDBConnection("mysql");
-		}
-
-	
-
+		// TODO Auto-generated constructor stub
+	}
 
 	public String createReservation(ReservationBean reservation) {
 		// TODO Auto-generated method stub
@@ -34,10 +50,11 @@ public class ReservationDaoImpl implements ReservationDao{
 			pstmt =connection.prepareStatement("insert into ata_tbl_reservation values(?,?,?,?,?,?,?,?,?,?,?)");
 			pstmt.setString(1, reservation.getReservationID());
 			pstmt.setString(2, reservation.getUserID());
-			pstmt.setString(3, reservation.getRouteID());
-			pstmt.setDate(4, Date.valueOf(reservation.getBookingDate()));
-			pstmt.setDate(5, Date.valueOf(reservation.getJourneyDate()));
-			pstmt.setString(6, reservation.getVehicleID());
+			pstmt.setString(3, reservation.getVehicleID());
+			pstmt.setString(4, reservation.getRouteID());
+			pstmt.setDate(5, Date.valueOf(reservation.getBookingDate()));
+			pstmt.setDate(6, Date.valueOf(reservation.getJourneyDate()));
+			
 			pstmt.setString(7, reservation.getDriverID());
 			pstmt.setString(8, reservation.getBookingStatus());
 			pstmt.setDouble(9, reservation.getTotalFare());
@@ -58,6 +75,9 @@ public class ReservationDaoImpl implements ReservationDao{
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
 				return "ERROR";
+			}catch(Exception e) {
+				System.out.println("Exception occurred"+e);
+				return "ERROR";
 			}
 	}
 
@@ -68,14 +88,16 @@ public class ReservationDaoImpl implements ReservationDao{
 		pstmt.setString(1,UserId);
 		pstmt.setString(2,reservationID);
 		int z= pstmt.executeUpdate();
-		pstmt.close();
-		connection.close();
+		
 		if(z>0)
 			return true;
 		else return false;
 		}catch(SQLException e)
 		{
 			System.out.println("sql error "+e);
+			return false;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return false;
 		}
 		
@@ -86,7 +108,7 @@ public class ReservationDaoImpl implements ReservationDao{
 		// TODO Auto-generated method stub
 		ArrayList<ReservationBean> bookingDetails = new ArrayList();
 		try {
-			pstmt= connection.prepareStatement("select * from ata_tbl_reservation where date =? and source=? and destination = ?");
+			pstmt= connection.prepareStatement("select * from ata_tbl_reservation where JourneyDate =? and BoardingPoint=? and DropPoint = ?");
 			pstmt.setDate(1,Date.valueOf(date));
 			pstmt.setString(2, source);
 			pstmt.setString(3, destination);
@@ -95,9 +117,10 @@ public class ReservationDaoImpl implements ReservationDao{
 				String reservationId= rst.getString(1);
 				String userid = rst.getString(2);
 				String routeid = rst.getString(3);
-				LocalDate bookingD = rst.getDate(4).toLocalDate();
-				LocalDate journeyD =rst.getDate(5).toLocalDate();
-				String vehiceid = rst.getString(6);
+				String vehiceid = rst.getString(4);
+				LocalDate bookingD = rst.getDate(5).toLocalDate();
+				LocalDate journeyD =rst.getDate(6).toLocalDate();
+				
 				String driverid=rst.getString(7);
 				String bookingstatus = rst.getString(8);
 				Double totalFare = rst.getDouble(9);
@@ -107,11 +130,12 @@ public class ReservationDaoImpl implements ReservationDao{
 				bookingDetails.add(reservationBean);
 				
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();
+			
 		}catch(SQLException e) {
 			System.out.println("sql error "+e);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
 		}
 		return bookingDetails;
 	}
@@ -125,11 +149,13 @@ public class ReservationDaoImpl implements ReservationDao{
 			while(rst.next()) {
 				String reservationId= rst.getString(1);
 				String userid = rst.getString(2);
-				String routeid = rst.getString(3);
-				LocalDate bookingD = rst.getDate(4).toLocalDate();
-				LocalDate journeyD =rst.getDate(5).toLocalDate();
-				String vehiceid = rst.getString(6);
-				String driverid=rst.getString(7);
+				String vehiceid = rst.getString(3);
+				String routeid = rst.getString(4);
+				
+				
+				LocalDate bookingD = rst.getDate(5).toLocalDate();
+				LocalDate journeyD =rst.getDate(6).toLocalDate();
+				String driverid =rst.getString(7);
 				String bookingstatus = rst.getString(8);
 				Double totalFare = rst.getDouble(9);
 				String pickup = rst.getString(10);
@@ -137,11 +163,12 @@ public class ReservationDaoImpl implements ReservationDao{
 				reservationBean = new ReservationBean(reservationId,userid,routeid,bookingD,journeyD,vehiceid,driverid,bookingstatus,totalFare,pickup, drop);
 				
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();
+			
 		}catch(SQLException e) {
 			System.out.println("sql error "+e);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return null;
 		}
 		return reservationBean;
 	}
@@ -156,14 +183,16 @@ public class ReservationDaoImpl implements ReservationDao{
 			while(rst.next()) {
 			 bookingstatus = rst.getString(8);
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();}catch(SQLException e) {
+			}catch(SQLException e) {
 				System.out.println("sql error "+e);}
-			if(bookingstatus.equals("Booked"))
-					return "Booking Successful";
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			return "ERROR";
+		}
+			if(bookingstatus.equals("Confirmed"))
+					return "Booked Successfully";
 			else
-				return "No vehicle booked";
+				return "Pending";
 	}
 
 	public boolean updateReservation(ReservationBean reservation) {
@@ -174,8 +203,7 @@ public class ReservationDaoImpl implements ReservationDao{
 			pstmt.setString(2, reservation.getBookingStatus());
 			pstmt.setString(3, reservation.getReservationID());
 			int z=pstmt.executeUpdate();
-			pstmt.close();
-			connection.close();
+			
 			if(z>0)
 				return true;
 			else 
@@ -183,6 +211,9 @@ public class ReservationDaoImpl implements ReservationDao{
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
+			return false;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return false;
 		}
 	}

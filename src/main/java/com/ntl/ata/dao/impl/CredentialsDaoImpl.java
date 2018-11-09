@@ -7,37 +7,50 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import com.ntl.ata.bean.CredentialsBean;
 import com.ntl.ata.dao.CredentialsDao;
 import com.ntl.ata.util.DBUtil;
 
 public class CredentialsDaoImpl implements CredentialsDao {
 	
-	Connection connection;
+	static Connection connection;
 	Statement statement;
 	PreparedStatement pstmt;
 	ResultSet rst;
-	
+	DataSource dataSource;
 	CredentialsBean userCred;
 	
-	public CredentialsDaoImpl() {
+	public CredentialsDaoImpl(DataSource dataSource) {
 		super();
-		//connection=cnn;
+		this.dataSource=dataSource;
+		try {
+			this.connection=dataSource.getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public CredentialsDaoImpl() {
+		connection=DBUtil.getDBConnection("mysql");
 		
 	}
 
-	public CredentialsDaoImpl( Connection cnn) {
-		super();
-		connection=cnn;
-		
-	}
+	
+
+	
+
+
 
 	public String createCredentials(CredentialsBean credentials) {
 		// TODO Auto-generated method stub
 		try {
 			
 			
-			connection=DBUtil.getDBConnection("mysql");
+			
 			pstmt =connection.prepareStatement("insert into ata_tbl_user_credentials values(?,?,?,?)");
 			 pstmt.setString(1,credentials.getUserID());
 		     pstmt.setString(2,credentials.getPassword());
@@ -45,10 +58,9 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		     pstmt.setInt(4,credentials.getLoginStatus());
 		     
 		     int z=pstmt.executeUpdate();
-		     pstmt.close();
-		     connection.close();
 		     
-		     if(z!=0) {
+		     
+		     if(z==1) {
 		    	 
 		    	 return "Success";
 		     }
@@ -60,6 +72,9 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
 				return "ERROR";
+			}catch(Exception e) {
+				System.out.println("Exception occurred"+e);
+				return "ERROR";
 			}
 	}
 
@@ -68,14 +83,13 @@ public class CredentialsDaoImpl implements CredentialsDao {
 	public boolean updateCredentials(CredentialsBean credentials) {
 		// TODO Auto-generated method stub
 		try {
-			connection=DBUtil.getDBConnection("mysql");
+			
 			pstmt =connection.prepareStatement("Update  ata_tbl_user_credentials set password=?, loginstatus=? where Userid=?");
 			 pstmt.setString(1,credentials.getPassword());
 		     pstmt.setInt(2,credentials.getLoginStatus());
 		     pstmt.setString(3,credentials.getUserID());
 		     int z=pstmt.executeUpdate();
-		     pstmt.close();
-		     connection.close();
+		     
 		     if(z!=0) {
 		    	 
 		    	 return true;
@@ -88,6 +102,9 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
 				return false;
+			}catch(Exception e) {
+				System.out.println("Exception occurred"+e);
+				return false;
 			}
 		     
 	}
@@ -95,7 +112,7 @@ public class CredentialsDaoImpl implements CredentialsDao {
 	public CredentialsBean findByID(String userid) {
 		// TODO Auto-generated method stub
 		try {
-		connection=DBUtil.getDBConnection("mysql");
+		
 		//System.out.println("Connection in DAO "+connection);
 		pstmt=connection.prepareStatement("select * from ata_tbl_user_credentials where userid=?");
 		pstmt.setString(1,userid);
@@ -108,19 +125,21 @@ public class CredentialsDaoImpl implements CredentialsDao {
 		int status=rst.getInt(4);
 		userCred= new CredentialsBean(uid, pass, type, status);
 		}
-		rst.close();
-		pstmt.close();
-		connection.close();
 		}
 		catch (SQLException e) {
 			System.out.println(" Exception while retrieving data from the database ");
-			e.printStackTrace();}
+			}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			
+		}
 		return userCred;
 	}
 		 
 	public CredentialsBean findLoggedIn(int loginstatus) {
 		// TODO Auto-generated method stub
 		try {
+			
 			pstmt = connection.prepareStatement("select * from ata_tbl_user_credentials where loginstatus=?");
 			pstmt.setInt(1,loginstatus);
 			rst=pstmt.executeQuery();
@@ -131,14 +150,16 @@ public class CredentialsDaoImpl implements CredentialsDao {
 			String type=rst.getString(3);
 			int status=rst.getInt(4);
 			userCred= new CredentialsBean(uid, pass, type, status);
-		}rst.close();
-		pstmt.close();
-		connection.close();
+		}
 			
 		}
 			catch (SQLException e) {
 				System.out.println(" Exception while retrieving data from the database ");
-				e.printStackTrace();}
+				}
+		catch(Exception e) {
+			System.out.println("Exception occurred"+e);
+			
+		}
 		return userCred;
 	}
 }

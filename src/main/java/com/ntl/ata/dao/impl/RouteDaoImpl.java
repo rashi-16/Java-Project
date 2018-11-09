@@ -28,6 +28,17 @@ public class RouteDaoImpl implements RouteDao {
 	
 	
 	
+	/**
+	 * 
+	 */
+	public RouteDaoImpl() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+
 	public String createRoute(RouteBean routeBean) {
 		// TODO Auto-generated method stub
 		try {
@@ -51,20 +62,14 @@ public class RouteDaoImpl implements RouteDao {
 		catch (SQLException e1){
 				System.out.println("Sql exception"+ e1);
 				return "ERROR";
+			}catch(Exception e) {
+				System.out.println("Exception occurred"+e);
+				return "ERROR";
 			}
-		finally
 		
-		{
-			try {
-				pstmt.close();
-				connection.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		
 			
-		}
+		
 	}
 	
 	
@@ -79,12 +84,14 @@ public class RouteDaoImpl implements RouteDao {
 		pstmt.setString(1,x);
 		 z= z+ pstmt.executeUpdate();
 			}
-			pstmt.close();
-			connection.close();
+			
 		return z;
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
+			return -1;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return -1;
 		}
 	}
@@ -102,8 +109,6 @@ public class RouteDaoImpl implements RouteDao {
 			pstmt.setInt(4,routeBean.getTravelDuration());
 			pstmt.setString(5,routeBean.getRouteID());
 			int z=pstmt.executeUpdate();
-			pstmt.close();
-			connection.close();
 			if(z>0)
 				return true;
 			else 
@@ -111,6 +116,9 @@ public class RouteDaoImpl implements RouteDao {
 		}catch(SQLException e)
 		{
 			System.out.println("Sql exception"+ e);
+			return false;
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 			return false;
 		}
 	}
@@ -134,11 +142,11 @@ public class RouteDaoImpl implements RouteDao {
 				route= new RouteBean(routeid, source, destination, distance, travelDuration);
 				
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();}
+			}
 		catch(SQLException e) {
 			System.out.println("Sql exception "+ e);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 		}
 	return route;
 	}
@@ -161,12 +169,12 @@ public class RouteDaoImpl implements RouteDao {
 				route= new RouteBean(routeid, source, destination, distance, travelDuration);
 				routeList.add(route);
 			}
-			rst.close();
-			pstmt.close();
-			connection.close();
+			
 		}catch(SQLException e)
 		{
 			System.out.println("sqlException " +e);
+		}catch(Exception e) {
+			System.out.println("Exception occurred"+e);
 		}
 		return routeList;
 	}
